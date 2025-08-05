@@ -2,8 +2,12 @@ require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-verify");
 require('dotenv').config();
 
+const INFURA_KEY = process.env.INFURA_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
+  defaultNetwork: "hardhat",
   solidity: {
     compilers: [
       {
@@ -53,11 +57,12 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: {
-      sepolia: "B5MVZ3CEJDG6IVHKA8PVPW9TBEVD9M1N6M",
-      bscTestnet: "KMPIGA7EH2HF5C7ACCJ8WQ3NKWHW7PS88X",
-      pionezero: "6TSSEDBBMEQ4KW8HVB9HHBWHZRA3JN7GSN"
-    },
+    apiKey: "B5MVZ3CEJDG6IVHKA8PVPW9TBEVD9M1N6M",
+    // apiKey: {
+    //   sepolia: "B5MVZ3CEJDG6IVHKA8PVPW9TBEVD9M1N6M",
+    //   bscTestnet: "B5MVZ3CEJDG6IVHKA8PVPW9TBEVD9M1N6M",
+    //   pionezero: "6TSSEDBBMEQ4KW8HVB9HHBWHZRA3JN7GSN"
+    // },
     customChains: [
       {
         network: "pionezero",

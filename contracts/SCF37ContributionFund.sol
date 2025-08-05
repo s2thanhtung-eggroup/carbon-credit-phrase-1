@@ -7,69 +7,49 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {IBEP20} from "./interface/IBEP20.sol";
 
 /**
- * @title ContributionFund
+ * @title SCF37ContributionFund
  * @dev This contract manages contributions in USDT tokens, supports multiple treasury wallets,
- *      enforces contribution limits, role-based access control, emergency withdrawals, and pausability.
+ *      enforces contribution limits, role-based access control and pausability.
  * 
  * Roles:
  * - DEFAULT_ADMIN_ROLE: Full control including managing admins and treasury wallets, and pausing/unpausing.
- * - ADMIN_ROLE: Limited control for updating contribution limits and initiating emergency withdrawals.
+ * - ADMIN_ROLE: Limited control for updating contribution limits.
  */
-contract ContributionFund is AccessControl, Pausable, ReentrancyGuard {
+contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     
-    /// @notice BEP20 token interface for USDT.
-    IBEP20 public usdt;
-
-    /// @notice List of treasury wallet addresses where funds can be withdrawn in emergencies.
-    address[] private treasuryWallets; 
-
-    /// @notice Role identifier for admins with restricted privileges.
+    // BEP20 token interface for USDT.
+    IBEP20 public immutable usdt;
+    // Role identifier for admins with restricted privileges.
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE"); 
     
-    /// @notice Total amount of contributions accumulated in the contract.
-    uint256 public totalContributions; 
+    // List of treasury wallet addresses where funds can be withdrawn in emergencies.
+    address[] private treasuryWallets; 
 
-    /// @notice Minimum contribution amount (in USDT tokens) required per transaction.
-    uint256 public minContributeAmount;
+    uint256 public minContributeAmount; // Minimum contribution amount (in USDT tokens) required per transaction.
+    uint256 public maxContributeAmount; // Maximum contribution amount (in USDT tokens) allowed per transaction.
 
-    /// @notice Maximum contribution amount (in USDT tokens) allowed per transaction.
-    uint256 public maxContributeAmount;
+    uint256 private totalContributions; // Total amount of contributions accumulated in the contract.
 
-    /// @notice Tracks the total contribution made by each user.
-    mapping(address => uint256) private userContributions;
-
-    /// @notice Tracks which addresses are valid treasury wallets.
-    mapping(address => bool) private isTreasuryWallet;
+    mapping(address => uint256) private userContributions; // Tracks the total contribution made by each user.
+    mapping(address => bool) private isTreasuryWallet; // Tracks which addresses are valid treasury wallets.
 
     // ---------------------------------------------------------
     // Events
     // ---------------------------------------------------------
 
-    /// @notice Emitted when a user contributes funds.
-    /// @param user The address of the contributor.
-    /// @param amount The amount contributed.
-    /// @param timestamp The block timestamp when the contribution occurred.
+    // Emitted when a user contributes funds.
     event Contribute(address indexed user, uint256 amount, uint256 timestamp);
 
-    /// @notice Emitted when an emergency withdrawal is executed by an admin.
-    /// @param admin The admin who executed the withdrawal.
-    /// @param treasuryWallet The treasury wallet receiving the funds.
-    /// @param amount The amount withdrawn.
-    /// @param timestamp The block timestamp when the withdrawal occurred.
+    // Emitted when an emergency withdrawal is executed by an admin.
     event EmergencyWithdraw(address indexed admin, address indexed treasuryWallet, uint256 amount, uint256 timestamp);
 
-    /// @notice Emitted when the default admin role is transferred to another address.
-    /// @param previousAdmin The address of the previous default admin.
-    /// @param newAdmin The address of the new default admin.
+    // Emitted when the default admin role is transferred to another address.
     event DefaultAdminTransferred(address indexed previousAdmin, address indexed newAdmin);
 
-    /// @notice Emitted when a treasury wallet is removed.
-    /// @param wallet The address of the removed treasury wallet.
+    // Emitted when a treasury wallet is removed.
     event TreasuryWalletRemoved(address indexed wallet);
 
-    /// @notice Emitted when contribution limits are updated.
-    /// @param minAmount The new minimum contribution amount.
-    /// @param maxAmount The new maximum contribution amount.
+    // Emitted when contribution limits are updated.
     event UpdateContributionLimit(uint256 minAmount, uint256 maxAmount);
 
     // ---------------------------------------------------------
@@ -109,12 +89,8 @@ contract ContributionFund is AccessControl, Pausable, ReentrancyGuard {
      * @param amount Amount of USDT to contribute (in smallest token units).
      */
     function contribute(uint256 amount) public whenNotPaused nonReentrant {
-        if (minContributeAmount > 0) {
-            require(amount >= minContributeAmount, "Contribution below minimum amount");
-        }
-        if (maxContributeAmount > 0) {
-            require(amount <= maxContributeAmount, "Contribution above maximum amount");
-        }
+        if (minContributeAmount > 0) require(amount >= minContributeAmount, "Contribution below minimum amount");
+        if (maxContributeAmount > 0) require(amount <= maxContributeAmount, "Contribution above maximum amount");
 
         require(usdt.balanceOf(msg.sender) >= amount, "Insufficient USDT balance");
         require(usdt.allowance(msg.sender, address(this)) >= amount, "Please approve USDT first");
@@ -205,6 +181,14 @@ contract ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     // ---------------------------------------------------------
     // View Functions
     // ---------------------------------------------------------
+
+    /**
+     * @notice Returns the total contributions accumulated in the contract.
+     * @return The total contributed amount.
+     */
+    function getTotalContributions() external view returns (uint256) {
+        return totalContributions;
+    }
 
     /**
      * @notice Returns the list of treasury wallets.
