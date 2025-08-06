@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {IBEP20} from "./interface/IBEP20.sol";
+import {IBEP20} from "./interfaces/IBEP20.sol";
 
 /**
  * @title SCF37ContributionFund
@@ -40,9 +40,6 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     // Emitted when a user contributes funds.
     event Contribute(address indexed user, uint256 amount, uint256 timestamp);
 
-    // Emitted when an emergency withdrawal is executed by an admin.
-    event EmergencyWithdraw(address indexed admin, address indexed treasuryWallet, uint256 amount, uint256 timestamp);
-
     // Emitted when the default admin role is transferred to another address.
     event DefaultAdminTransferred(address indexed previousAdmin, address indexed newAdmin);
 
@@ -51,6 +48,9 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
 
     // Emitted when contribution limits are updated.
     event UpdateContributionLimit(uint256 minAmount, uint256 maxAmount);
+
+    // Emitted when an emergency withdrawal is executed by an admin.
+    event EmergencyWithdraw(address indexed admin, address indexed treasuryWallet, uint256 amount, uint256 timestamp);
 
     // ---------------------------------------------------------
     // Constructor
@@ -64,8 +64,8 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
      */
     constructor(address[] memory _treasuryWallets, address _usdtAddress) {
         require(_treasuryWallets.length > 0, "Must provide at least one treasury wallet");
-        
-        for (uint256 i = 0; i < _treasuryWallets.length; i++) {
+        uint256 len = _treasuryWallets.length;
+        for (uint256 i = 0; i < len; i++) {
             require(_treasuryWallets[i] != address(0), "Invalid treasury wallet address");
             treasuryWallets.push(_treasuryWallets[i]);
             isTreasuryWallet[_treasuryWallets[i]] = true;
@@ -87,21 +87,24 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
      * @dev Validates min/max limits, user balance, and allowance before transfer.
      * Emits a {Contribute} event upon success.
      * @param amount Amount of USDT to contribute (in smallest token units).
+     * @return Returns true if the contribution was successful.
      */
-    function contribute(uint256 amount) public whenNotPaused nonReentrant {
+    function contribute(uint256 amount) public whenNotPaused nonReentrant returns (bool) {
         if (minContributeAmount > 0) require(amount >= minContributeAmount, "Contribution below minimum amount");
         if (maxContributeAmount > 0) require(amount <= maxContributeAmount, "Contribution above maximum amount");
 
-        require(usdt.balanceOf(msg.sender) >= amount, "Insufficient USDT balance");
-        require(usdt.allowance(msg.sender, address(this)) >= amount, "Please approve USDT first");
+        address user = msg.sender;
+        require(usdt.balanceOf(user) >= amount, "Insufficient USDT balance");
+        require(usdt.allowance(user, address(this)) >= amount, "Please approve USDT first");
 
         // Transfer USDT from contributor to contract
-        require(usdt.transferFrom(msg.sender, address(this), amount), "USDT transfer failed");
+        require(usdt.transferFrom(user, address(this), amount), "USDT transfer failed");
 
-        userContributions[msg.sender] += amount;
+        userContributions[user] += amount;
         totalContributions += amount;
         
-        emit Contribute(msg.sender, amount, block.timestamp);
+        emit Contribute(user, amount, block.timestamp);
+        return true;
     }
 
     /**
@@ -150,10 +153,10 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
         require(treasuryWallets.length > 1, "Must keep at least one treasury wallet");
 
         isTreasuryWallet[wallet] = false;
-        
-        for (uint256 i = 0; i < treasuryWallets.length; i++) {
+        uint256 len = treasuryWallets.length;
+        for (uint256 i = 0; i < len; i++) {
             if (treasuryWallets[i] == wallet) {
-                treasuryWallets[i] = treasuryWallets[treasuryWallets.length - 1];
+                treasuryWallets[i] = treasuryWallets[len - 1];
                 treasuryWallets.pop();
                 break;
             }
