@@ -56,8 +56,8 @@ module.exports = {
       accounts: [PRIVATE_KEY],
       chainId: 56,
     },
-    pionezero: {
-      url: "https://rpc.zeroscan.org",
+    pione: {
+      url: "https://rpc.pionescan.com",
       chainId: 5090,
       accounts: [PRIVATE_KEY],
     },

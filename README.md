@@ -110,12 +110,12 @@ npx hardhat verify --network bscMainnet <contract_address> <constructor_args>
 
 #### Deploy on PioneChain
 ```bash
-npx hardhat ignition deploy ignition/modules/SCF37ContributionTracker.js --network pionezero
+npx hardhat ignition deploy ignition/modules/SCF37ContributionTracker.js --network pione
 ```
 
 #### Verify on PioneChain
 ```bash
-npx hardhat verify --network pionezero <contract_address>
+npx hardhat verify --network pione <contract_address>
 ```
 
 ---
