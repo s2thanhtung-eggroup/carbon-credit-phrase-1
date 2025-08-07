@@ -51,6 +51,11 @@ module.exports = {
       accounts: [PRIVATE_KEY], 
       chainId: 97,
     },
+    bscMainnet: {
+      url: `https://bsc-mainnet.infura.io/v3/${INFURA_KEY}`,
+      accounts: [PRIVATE_KEY],
+      chainId: 56,
+    },
     pionezero: {
       url: "https://rpc.zeroscan.org",
       chainId: 5090,
