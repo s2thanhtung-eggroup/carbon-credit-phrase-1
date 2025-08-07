@@ -137,12 +137,12 @@ You can still use Sepolia, BSC Testnet, or Hardhat local node for development an
 You can quickly deploy both contracts using the provided scripts for each network. This is the fastest way to get started with deployment:
 
 ```bash
-npx hardhat run scripts/01-deploy-contributionFund.js --network pione
-npx hardhat run scripts/02-deploy-contributionTracker.js --network bscMainnet
+npx hardhat run scripts/01-deploy-contributionFund.js --network bscMainnet
+npx hardhat run scripts/02-deploy-contributionTracker.js --network pione
 ```
 
-- The first command deploys the SCF37ContributionFund contract to the PioneChain network.
-- The second command deploys the SCF37ContributionTracker contract to the BNB Mainnet.
+- The first command deploys the SCF37ContributionFund contract to the BNB Mainnet.
+- The second command deploys the SCF37ContributionTracker contract to the PioneChain network.
 
 > **Note:**
 > - Make sure your `.env` and Hardhat config are set up for the correct networks and accounts.
