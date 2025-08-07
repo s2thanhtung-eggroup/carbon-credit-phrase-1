@@ -154,7 +154,7 @@ describe("SCF37ContributionFund - Full Test", function () {
   // ------------------ Emergency Withdraw ------------------
 
   it("Should allow emergency withdraw by admin", async () => {
-    const { admin, user1, usdt, treasury1, contributionFund } = await loadFixture(deployFixture);
+    const { owner, admin, user1, usdt, treasury1, contributionFund } = await loadFixture(deployFixture);
 
     await usdt.connect(user1).approve(contributionFund.target, ethers.parseUnits("100", 18));
     await contributionFund.connect(user1).contribute(ethers.parseUnits("100", 18));
@@ -163,25 +163,25 @@ describe("SCF37ContributionFund - Full Test", function () {
 
     await expect(
       contributionFund
-        .connect(admin)
+        .connect(owner)
         .emergencyWithdraw(treasury1.address, ethers.parseUnits("50", 18))
     )
       .to.emit(contributionFund, "EmergencyWithdraw")
-      .withArgs(admin.address, treasury1.address, ethers.parseUnits("50", 18), anyValue);
+      .withArgs(owner.address, treasury1.address, ethers.parseUnits("50", 18), anyValue);
 
     const treasuryAfter = await usdt.balanceOf(treasury1.address);
     expect(treasuryAfter - treasuryBefore).to.equal(ethers.parseUnits("50", 18));
   });
 
   it("Should fail emergency withdraw if invalid treasury or insufficient balance", async () => {
-    const { admin, treasury3, contributionFund } = await loadFixture(deployFixture);
+    const { owner, treasury3, contributionFund } = await loadFixture(deployFixture);
 
     await expect(
-      contributionFund.connect(admin).emergencyWithdraw(treasury3.address, 1)
+      contributionFund.connect(owner).emergencyWithdraw(treasury3.address, 1)
     ).to.be.revertedWith("Not a treasury wallet");
 
     await expect(
-      contributionFund.connect(admin).emergencyWithdraw(treasury3.address, 100)
+      contributionFund.connect(owner).emergencyWithdraw(treasury3.address, 100)
     ).to.be.reverted;
   });
 

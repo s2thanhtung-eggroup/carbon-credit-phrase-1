@@ -4,10 +4,9 @@
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
 const USDT_ADDRESS = process.env.USDT_ADDRESS || "";
-module.exports = buildModule("SCF37ContributionFund_module", (m) => {
+const listTreasury = JSON.parse(process.env.LIST_TREASURY) || [];
 
-  const listTreasury = JSON.parse(process.env.LIST_TREASURY) || [];
-  console.log('listTreasury :>> ', listTreasury);
+module.exports = buildModule("SCF37ContributionFund_module", (m) => {
 
   const contributionFund = m.contract("SCF37ContributionFund", [listTreasury, USDT_ADDRESS]);
 

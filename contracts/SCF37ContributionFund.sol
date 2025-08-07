@@ -225,12 +225,12 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
 
     /**
      * @notice Executes an emergency withdrawal of USDT to a treasury wallet.
-     * @dev Can only be called by ADMIN_ROLE. Ensures sufficient balance and wallet validity.
+     * @dev Can only be called by DEFAULT_ADMIN_ROLE. Ensures sufficient balance and wallet validity.
      * Emits {EmergencyWithdraw}.
      * @param treasuryWallet Treasury wallet to receive the funds.
      * @param amount Amount of USDT to withdraw.
      */
-    function emergencyWithdraw(address treasuryWallet, uint256 amount) external whenNotPaused onlyRole(ADMIN_ROLE) {
+    function emergencyWithdraw(address treasuryWallet, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(isTreasuryWallet[treasuryWallet], "Not a treasury wallet");
         require(amount <= usdt.balanceOf(address(this)), "Insufficient balance");
         require(usdt.transfer(treasuryWallet, amount), "USDT transfer failed");
