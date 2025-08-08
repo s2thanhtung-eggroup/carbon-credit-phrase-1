@@ -4,9 +4,10 @@ const developmentChains = ["hardhat", "localhost"];
 // number of blocks for confirmation
 const blockConfirmation = {
   sepolia: 6,
-  mumbai: 6,
-  etherlink: 2,
-  nightly: 2
+  pione: 6,
+  pionezero: 3,
+  bscTestnet: 12,
+  bscMainnet: 15,
 }
 
 module.exports = {

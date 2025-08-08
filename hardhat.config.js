@@ -61,9 +61,20 @@ module.exports = {
       chainId: 5090,
       accounts: [PRIVATE_KEY],
     },
+    pioneZero: {
+      url: "https://rpc.zeroscan.org",
+      chainId: 5080,
+      accounts: [PRIVATE_KEY],
+    },
+  },
+  sourcify: {
+    enabled: true
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
+    apiKey: {
+      bscMainnet: ETHERSCAN_API_KEY,
+      pione: ETHERSCAN_API_KEY,
+    },
     customChains: [
       {
         network: "pione",
@@ -72,6 +83,14 @@ module.exports = {
           apiURL: "https://pionescan.com/api/",
           browserURL: "https://pionescan.com/",
         },
+      },
+      {
+        network: "pioneZero",
+        chainId: 5080,
+        urls: {
+          apiURL: "https://zeroscan.org/api/",
+          browserURL: "https://zeroscan.org/"
+        }
       }
     ]
   }
