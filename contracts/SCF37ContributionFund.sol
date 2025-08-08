@@ -43,6 +43,9 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     // Emitted when the default admin role is transferred to another address.
     event DefaultAdminTransferred(address indexed previousAdmin, address indexed newAdmin);
 
+    // Emitted when a treasury wallet is added.
+    event TreasuryWalletAdded(address indexed wallet);
+
     // Emitted when a treasury wallet is removed.
     event TreasuryWalletRemoved(address indexed wallet);
 
@@ -143,6 +146,22 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     // ---------------------------------------------------------
 
     /**
+     * @notice Adds a new treasury wallet to the list.
+     * @dev Can only be executed by DEFAULT_ADMIN_ROLE. Validates the wallet address.
+     * Emits a {TreasuryWalletAdded} event.
+     * @param wallet Address of the treasury wallet to add.
+     */
+    function addTreasuryWallet(address wallet) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(wallet != address(0), "Invalid treasury wallet address");
+        require(!isTreasuryWallet[wallet], "Wallet is already a treasury wallet");
+
+        treasuryWallets.push(wallet);
+        isTreasuryWallet[wallet] = true;
+
+        emit TreasuryWalletAdded(wallet);
+    }
+
+    /**
      * @notice Removes a treasury wallet from the list.
      * @dev Can only be executed by DEFAULT_ADMIN_ROLE. Must always retain at least one treasury wallet.
      * Emits a {TreasuryWalletRemoved} event.
@@ -230,7 +249,7 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
      * @param treasuryWallet Treasury wallet to receive the funds.
      * @param amount Amount of USDT to withdraw.
      */
-    function emergencyWithdraw(address treasuryWallet, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function emergencyWithdraw(address treasuryWallet, uint256 amount) external onlyRole(ADMIN_ROLE) {
         require(isTreasuryWallet[treasuryWallet], "Not a treasury wallet");
         require(amount <= usdt.balanceOf(address(this)), "Insufficient balance");
         require(usdt.transfer(treasuryWallet, amount), "USDT transfer failed");
