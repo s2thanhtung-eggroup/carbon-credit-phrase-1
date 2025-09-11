@@ -71,10 +71,11 @@ module.exports = {
     enabled: true
   },
   etherscan: {
-    apiKey: {
-      bscMainnet: ETHERSCAN_API_KEY,
-      pione: ETHERSCAN_API_KEY,
-    },
+    apiKey: ETHERSCAN_API_KEY,
+    // apiKey: {
+    //   bscMainnet: ETHERSCAN_API_KEY,
+    //   pione: ETHERSCAN_API_KEY,
+    // },
     customChains: [
       {
         network: "pione",

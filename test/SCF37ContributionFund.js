@@ -153,7 +153,7 @@ describe("SCF37ContributionFund - Full Test", function () {
 
   // ------------------ Emergency Withdraw ------------------
 
-  it("Should allow emergency withdraw by admin", async () => {
+  it("Should allow withdraw USDT by admin", async () => {
     const { owner, admin, user1, usdt, treasury1, contributionFund } = await loadFixture(deployFixture);
 
     await usdt.connect(user1).approve(contributionFund.target, ethers.parseUnits("100", 18));
@@ -164,32 +164,32 @@ describe("SCF37ContributionFund - Full Test", function () {
     await expect(
       contributionFund
         .connect(owner)
-        .emergencyWithdraw(treasury1.address, ethers.parseUnits("50", 18))
+        .withdraw(treasury1.address, ethers.parseUnits("50", 18))
     )
-      .to.emit(contributionFund, "EmergencyWithdraw")
+      .to.emit(contributionFund, "Withdraw")
       .withArgs(owner.address, treasury1.address, ethers.parseUnits("50", 18), anyValue);
 
     const treasuryAfter = await usdt.balanceOf(treasury1.address);
     expect(treasuryAfter - treasuryBefore).to.equal(ethers.parseUnits("50", 18));
   });
 
-  it("Should fail emergency withdraw if invalid treasury or insufficient balance", async () => {
+  it("Should fail withdraw USDT if invalid treasury or insufficient balance", async () => {
     const { owner, treasury3, contributionFund } = await loadFixture(deployFixture);
 
     await expect(
-      contributionFund.connect(owner).emergencyWithdraw(treasury3.address, 1)
+      contributionFund.connect(owner).withdraw(treasury3.address, 1)
     ).to.be.revertedWith("Not a treasury wallet");
 
     await expect(
-      contributionFund.connect(owner).emergencyWithdraw(treasury3.address, 100)
+      contributionFund.connect(owner).withdraw(treasury3.address, 100)
     ).to.be.reverted;
   });
 
-  it("Should not allow non-admin to emergency withdraw", async () => {
+  it("Should not allow non-admin to withdraw", async () => {
     const { user1, treasury1, contributionFund } = await loadFixture(deployFixture);
 
     await expect(
-      contributionFund.connect(user1).emergencyWithdraw(treasury1.address, 10)
+      contributionFund.connect(user1).withdraw(treasury1.address, 10)
     ).to.be.reverted;
   });
 

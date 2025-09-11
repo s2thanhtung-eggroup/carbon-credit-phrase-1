@@ -17,7 +17,7 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 contract SCF37ContributionTracker is AccessControl, Pausable {
 
     // Role identifier for admin functions that can record and update contributions
-    bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");  
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");  
     // Types of actions recorded in the contribution history
     enum ActionType { 
         Contribute,  // Initial contribution record

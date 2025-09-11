@@ -1,4 +1,23 @@
 {
+  "name": "carbon-credit-phrase-1",
+  "version": "1.0.1",
+  "description": "This project contains a suite of smart contracts for managing contributions and tracking user participation in a blockchain-based system.",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy:fund": "npx hardhat ignition deploy ignition/modules/SCF37ContributionFund.js --network bscTestnet --verify",
+    "deploy:tracker": "npx hardhat ignition deploy ignition/modules/SCF37ContributionTracker.js --network bscTestnet --verify",
+    "verify:fund": "npx hardhat verify --network bscMainnet <contract_address> <constructor_args>",
+    "verify:tracker": "npx hardhat verify --network pione <contract_address>"
+  },
+  "keywords": [
+    "carbon-credit",
+    "scf-blue",
+    "scf37"
+  ],
+  "author": "SCF-Blue",
+  "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "hardhat": "^2.26.1"
