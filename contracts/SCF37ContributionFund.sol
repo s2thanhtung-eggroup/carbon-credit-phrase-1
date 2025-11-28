@@ -52,9 +52,8 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     // Emitted when contribution limits are updated.
     event UpdateContributionLimit(uint256 minAmount, uint256 maxAmount);
 
-    // Emitted when an emergency withdrawal is executed by an admin.
-    event EmergencyWithdraw(address indexed admin, address indexed treasuryWallet, uint256 amount, uint256 timestamp);
-
+    //Emitted when an admin withdraws funds to the treasury wallet.
+    event Withdraw(address indexed admin, address indexed treasuryWallet, uint256 amount, uint256 timestamp);
     // ---------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------
@@ -243,18 +242,18 @@ contract SCF37ContributionFund is AccessControl, Pausable, ReentrancyGuard {
     // ---------------------------------------------------------
 
     /**
-     * @notice Executes an emergency withdrawal of USDT to a treasury wallet.
-     * @dev Can only be called by DEFAULT_ADMIN_ROLE. Ensures sufficient balance and wallet validity.
-     * Emits {EmergencyWithdraw}.
+     * @notice Withdraws USDT from the contract to a registered treasury wallet.
+     * @dev Can only be called by ADMIN_ROLE. Ensures sufficient balance and wallet validity.
+     * Emits {Withdraw}.
      * @param treasuryWallet Treasury wallet to receive the funds.
      * @param amount Amount of USDT to withdraw.
      */
-    function emergencyWithdraw(address treasuryWallet, uint256 amount) external onlyRole(ADMIN_ROLE) {
+    function withdraw(address treasuryWallet, uint256 amount) external onlyRole(ADMIN_ROLE) whenNotPaused {
         require(isTreasuryWallet[treasuryWallet], "Not a treasury wallet");
         require(amount <= usdt.balanceOf(address(this)), "Insufficient balance");
         require(usdt.transfer(treasuryWallet, amount), "USDT transfer failed");
         
-        emit EmergencyWithdraw(msg.sender, treasuryWallet, amount, block.timestamp);
+        emit Withdraw(msg.sender, treasuryWallet, amount, block.timestamp);
     }
 
     // ---------------------------------------------------------
