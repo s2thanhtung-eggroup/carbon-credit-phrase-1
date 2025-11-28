@@ -74,6 +74,7 @@ module.exports = {
     apiKey: {
       bscMainnet: ETHERSCAN_API_KEY,
       pione: ETHERSCAN_API_KEY,
+      pioneZero: ETHERSCAN_API_KEY,
     },
     customChains: [
       {
